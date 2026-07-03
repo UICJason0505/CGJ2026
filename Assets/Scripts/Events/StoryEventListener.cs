@@ -5,12 +5,14 @@ public class StoryEventListener : MonoBehaviour
 {
     [SerializeField] private StoryEventSO[] storyEvents;
 
+    [Header("Dialogue")]
+    [SerializeField] private DialogueManager dialogueManager;
+
     [Header("Description")]
     [SerializeField] private Transform descriptionCanvas;
     [SerializeField] private GameObject descriptionTemplate;
 
     [Header("Outcome Handlers")]
-    [SerializeField] private UnityEvent<StoryEventSO> onDialogue;
     [SerializeField] private UnityEvent<StoryEventSO> onDescription;
     [SerializeField] private UnityEvent<string> onAnimation;
     [SerializeField] private UnityEvent onFunction;
@@ -38,14 +40,15 @@ public class StoryEventListener : MonoBehaviour
             Destroy(descriptionCanvas.GetChild(i).gameObject);
     }
 
-    public bool IsDescriptionActive =>
-        descriptionCanvas != null && descriptionCanvas.childCount > 0;
+    public bool IsBusy =>
+        (descriptionCanvas != null && descriptionCanvas.childCount > 0)
+        || (dialogueManager != null && dialogueManager.IsActive);
 
     public void OnEventRaised(StoryEventSO raisedEvent)
     {
-        if (IsDescriptionActive)
+        if (IsBusy)
         {
-            Debug.Log($"[Listener] Description 弹窗未关闭，拦截事件: {raisedEvent.name}");
+            Debug.Log($"[Listener] 忙碌中，拦截事件: {raisedEvent.name}");
             return;
         }
 
@@ -53,29 +56,25 @@ public class StoryEventListener : MonoBehaviour
         switch (raisedEvent.outcomeType)
         {
             case EventOutcomeType.Dialogue:
-                onDialogue?.Invoke(raisedEvent);
+                if (dialogueManager != null)
+                    dialogueManager.StartDialogue(raisedEvent);
                 break;
+
             case EventOutcomeType.Description:
-                Debug.Log($"[Listener] Description 分支: template={descriptionTemplate != null}, canvas={descriptionCanvas != null}");
                 if (descriptionTemplate != null)
                 {
                     var instance = Instantiate(descriptionTemplate, descriptionCanvas);
-                    Debug.Log($"[Listener] 实例化了 Prefab: {instance.name}");
                     var popup = instance.GetComponent<DescriptionPopup>();
                     if (popup != null)
                         popup.Init(raisedEvent.popupSprite, raisedEvent.popupDescription);
-                    else
-                        Debug.LogWarning($"[Listener] Prefab 上没找到 DescriptionPopup 组件！", instance);
-                }
-                else
-                {
-                    Debug.LogWarning("[Listener] descriptionTemplate 为空，请拖入 Prefab！", this);
                 }
                 onDescription?.Invoke(raisedEvent);
                 break;
+
             case EventOutcomeType.Animation:
                 onAnimation?.Invoke(raisedEvent.animationTriggerName);
                 break;
+
             case EventOutcomeType.Function:
                 onFunction?.Invoke();
                 break;

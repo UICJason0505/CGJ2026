@@ -19,8 +19,10 @@ public enum DialogueType
 [Serializable]
 public class DialogueChoice
 {
-    public string choiceText;
-    public int nextNodeId;
+    public string choiceText;    // 选项按钮上的文字
+    [TextArea(2, 3)]
+    public string responseText;  // 选择后主角说的详细文本
+    public int nextNodeId;       // 跳转到哪个节点
 }
 
 [Serializable]
@@ -31,7 +33,7 @@ public class DialogueNode
     public string text;
     public string speakerName;       // 对话时填，独白时留空
     public DialogueChoice[] choices; // 选项回应，可空
-    public bool isEnd;               // 勾选表示此节点是对话终点，不再推进
+    public int nextNodeId = -1;      // 下一段对话的 nodeId，-1 表示终点
 }
 
 [CreateAssetMenu(menuName = "Storyline/Story Event", fileName = "NewStoryEvent")]

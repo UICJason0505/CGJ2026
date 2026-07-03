@@ -39,7 +39,7 @@ public class Dream : MonoBehaviour
     private void Update()
     {
         if (!Input.GetKeyDown(KeyCode.W)) return;
-        if (eventListener != null && eventListener.IsDescriptionActive) return;
+        if (eventListener != null && eventListener.IsBusy) return;
 
         _currentStep++;
         switch (_currentStep)
