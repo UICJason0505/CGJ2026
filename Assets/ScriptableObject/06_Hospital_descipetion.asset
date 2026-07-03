@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f42ea7f20a349574d9bbd674990e8af1, type: 3}
+  m_Name: 06_Hospital_descipetion
+  m_EditorClassIdentifier: 
+  outcomeType: 0
+  description: "\u533B\u9662\u63CF\u8FF0"
+  dialogueType: 0
+  dialogueNodes:
+  - nodeId: 0
+    text: "\u9057\u61BE\u7684\u544A\u8BC9\u4F60\uFF0C\u4F60\u6362\u4E0A\u4E86\u963F\u5C14\u5179\u6D77\u9ED8\u75C7\u3002\u4FD7\u79F0\u8001\u5E74\u75F4\u5446"
+    speakerName: doctor
+    choices: []
+    isEnd: 0
+  - nodeId: 1
+    text: "\u6CA1\u6709\u522B\u7684\u529E\u6CD5\u4E86\u4E48"
+    speakerName: son
+    choices: []
+    isEnd: 0
+  - nodeId: 2
+    text: "\u62B1\u6B49\uFF0C\u73B0\u5728\u53EA\u80FD\u505A\u4FDD\u5B88\u6CBB\u7597"
+    speakerName: doctor
+    choices:
+    - choiceText: "\u6211\u4E0D\u63A5\u53D7"
+      nextNodeId: 3
+    - choiceText: "\u3002\u3002\u3002\u3002\u3002\u3002"
+      nextNodeId: 4
+    isEnd: 0
+  - nodeId: 3
+    text: "\u522B\u8FD9\u4E48\u8BF4"
+    speakerName: doctor
+    choices: []
+    isEnd: 1
+  - nodeId: 4
+    text: "\u3002\u3002\u3002\u3002\u3002\u3002"
+    speakerName: doctor
+    choices: []
+    isEnd: 1
+  popupSprite: {fileID: 0}
+  popupDescription: 
+  animationTriggerName: 
