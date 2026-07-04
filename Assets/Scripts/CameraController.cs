@@ -10,7 +10,7 @@ public class MaskCameraController : MonoBehaviour
 
     public Canvas canvas;
 
-    public bool startOpen = true;
+    public bool startOpen = false;
 
     public Vector2 xLimit = new Vector2(-800f, 800f);
     public Vector2 yLimit = new Vector2(-450f, 450f);
