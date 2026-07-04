@@ -16,6 +16,6 @@ MonoBehaviour:
   description: "\u5E3D\u5B50\u63CF\u8FF0"
   dialogueType: 0
   dialogueNodes: []
-  popupSprite: {fileID: 0}
-  popupDescription: 
+  popupSprite: {fileID: 21300000, guid: c415ad9f0b127d540835f69e4f414de3, type: 3}
+  popupDescription: "\u4E00\u9876\u5E3D\u5B50"
   animationTriggerName: 

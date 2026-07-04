@@ -1,0 +1,37 @@
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+[RequireComponent(typeof(Button))]
+public class HoverOutline : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+{
+    [SerializeField] private Color hoverColor = Color.white;
+
+    private Image _image;
+    private Color _originalColor;
+
+    private void Awake()
+    {
+        _image = GetComponent<Image>();
+        if (_image == null)
+            _image = GetComponentInChildren<Image>();
+
+        if (_image != null)
+        {
+            _originalColor = _image.color;
+            _image.alphaHitTestMinimumThreshold = 0.5f;
+        }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (_image != null)
+            _image.color = hoverColor;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (_image != null)
+            _image.color = _originalColor;
+    }
+}

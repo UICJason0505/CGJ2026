@@ -12,8 +12,9 @@ public class StoryPhaseEvent
 {
     public StoryEventSO storyEvent;
     public int sequenceIndex;
-    public bool repeatable;
     public TriggerMode triggerMode;
+    public bool repeatable;
+    public bool skipInTest;
 }
 
 [System.Serializable]
@@ -81,6 +82,13 @@ public class StorylineController : MonoBehaviour
         var entry = phase.events[eventIndex];
         if (entry.storyEvent == null) return;
 
+        if (entry.skipInTest)
+        {
+            Debug.Log($"[Storyline] 事件 {eventIndex} 跳过（skipInTest）");
+            AdvanceSequence();
+            return;
+        }
+
         // 可重复触发：不限序号，无限触发，首次触发推进序号
         if (entry.repeatable)
         {
@@ -137,9 +145,17 @@ public class StorylineController : MonoBehaviour
     /// <summary>通过 StoryEventSO 引用触发（供 Dream/Button 等使用），自动查索引并校验序号</summary>
     public void TryRaiseEvent(StoryEventSO storyEvent)
     {
-        if (storyEvent == null) return;
+        if (storyEvent == null)
+        {
+            Debug.LogWarning("[Storyline] TryRaiseEvent: storyEvent 为空");
+            return;
+        }
         var phase = CurrentPhase;
-        if (phase == null) return;
+        if (phase == null)
+        {
+            Debug.LogWarning($"[Storyline] TryRaiseEvent: 当前无阶段，无法触发 {storyEvent.name}");
+            return;
+        }
 
         for (int i = 0; i < phase.events.Length; i++)
         {
@@ -150,7 +166,7 @@ public class StorylineController : MonoBehaviour
             }
         }
 
-        Debug.LogWarning($"[Storyline] 当前阶段未找到事件: {storyEvent.name}");
+        Debug.LogWarning($"[Storyline] TryRaiseEvent: 当前阶段未找到事件 {storyEvent.name}，请将其加入 Phase[{CurrentPhaseIndex}] 的 Events 列表");
     }
 
     /// <summary>强制跳到下一个序号</summary>
@@ -178,6 +194,7 @@ public class StorylineController : MonoBehaviour
             if (entry.triggerMode != TriggerMode.Auto) continue;
             if (entry.sequenceIndex != _currentSequence) continue;
             if (!entry.repeatable && _triggeredOnce.Contains(i)) continue;
+            if (entry.skipInTest) continue;
 
             _triggeredOnce.Add(i);
             entry.storyEvent.Raise();
