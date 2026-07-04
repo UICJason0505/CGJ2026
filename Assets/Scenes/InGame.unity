@@ -1188,7 +1188,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.01666667, y: 0.025000002, z: 0.025000002}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1400608552}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1217,7 +1217,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 3c1e1f6f665d89242a65aa4f8bfba262, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1643,8 +1643,8 @@ RectTransform:
   m_GameObject: {fileID: 1400608549}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 60, y: 40, z: 40}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 60, y: 40, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 684260437}
   m_Father: {fileID: 1493242955}
@@ -1887,8 +1887,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a005f36272afa1141ae72c265ff590f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraMaskObject: {fileID: 684260436}
+  cameraMaskObject: {fileID: 1400608549}
   cameraMaskRect: {fileID: 1400608552}
+  backgroundRect: {fileID: 1162126707}
+  photoImageRect: {fileID: 684260437}
   canvas: {fileID: 1493242954}
   startOpen: 0
   xLimit: {x: -360, y: 360}

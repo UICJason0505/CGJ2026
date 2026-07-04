@@ -1,71 +1,92 @@
 using UnityEngine;
 
-public class CameraController : MonoBehaviour
+public class MaskCameraController : MonoBehaviour
 {
-    public GameObject cameraMaskObject;
-    public RectTransform cameraMaskRect;
+    public GameObject maskObject;
+    public RectTransform maskRect;
+
+    public RectTransform referenceBackground;
+    public RectTransform hiddenImage;
+
     public Canvas canvas;
 
-    public bool startOpen = false;
+    public bool startOpen = true;
 
     public Vector2 xLimit = new Vector2(-800f, 800f);
     public Vector2 yLimit = new Vector2(-450f, 450f);
 
+    private Camera uiCamera;
+
     void Start()
     {
-        if (cameraMaskObject != null)
+        if (maskRect == null && maskObject != null)
         {
-            cameraMaskObject.SetActive(startOpen);
+            maskRect = maskObject.GetComponent<RectTransform>();
         }
 
-        if (cameraMaskRect == null && cameraMaskObject != null)
+        if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
         {
-            cameraMaskRect = cameraMaskObject.GetComponent<RectTransform>();
+            uiCamera = canvas.worldCamera;
         }
+
+        if (maskObject != null)
+        {
+            maskObject.SetActive(startOpen);
+        }
+
+        InitHiddenImage();
+        MatchHiddenImageToBackground();
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.F))
         {
-            ToggleCameraMask();
+            ToggleMask();
         }
 
-        if (cameraMaskObject != null && cameraMaskObject.activeSelf)
+        if (maskObject != null && maskObject.activeSelf)
         {
-            FollowMouseUI();
+            FollowMouse();
         }
     }
 
-    void ToggleCameraMask()
+    void LateUpdate()
     {
-        if (cameraMaskObject == null)
+        if (maskObject != null && maskObject.activeSelf)
+        {
+            MatchHiddenImageToBackground();
+        }
+    }
+
+    void ToggleMask()
+    {
+        if (maskObject == null)
         {
             return;
         }
 
-        cameraMaskObject.SetActive(!cameraMaskObject.activeSelf);
+        maskObject.SetActive(!maskObject.activeSelf);
+
+        if (maskObject.activeSelf)
+        {
+            InitHiddenImage();
+            MatchHiddenImageToBackground();
+        }
     }
 
-    void FollowMouseUI()
+    void FollowMouse()
     {
-        if (cameraMaskRect == null)
+        if (maskRect == null)
         {
             return;
         }
 
-        RectTransform parentRect = cameraMaskRect.parent as RectTransform;
+        RectTransform parentRect = maskRect.parent as RectTransform;
 
         if (parentRect == null)
         {
             return;
-        }
-
-        Camera uiCamera = null;
-
-        if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
-        {
-            uiCamera = canvas.worldCamera;
         }
 
         Vector2 localMousePos;
@@ -85,6 +106,58 @@ public class CameraController : MonoBehaviour
         localMousePos.x = Mathf.Clamp(localMousePos.x, xLimit.x, xLimit.y);
         localMousePos.y = Mathf.Clamp(localMousePos.y, yLimit.x, yLimit.y);
 
-        cameraMaskRect.anchoredPosition = localMousePos;
+        maskRect.anchoredPosition = localMousePos;
+    }
+
+    void InitHiddenImage()
+    {
+        if (hiddenImage == null || referenceBackground == null)
+        {
+            return;
+        }
+
+        hiddenImage.anchorMin = new Vector2(0.5f, 0.5f);
+        hiddenImage.anchorMax = new Vector2(0.5f, 0.5f);
+        hiddenImage.pivot = new Vector2(0.5f, 0.5f);
+
+        hiddenImage.SetSizeWithCurrentAnchors(
+            RectTransform.Axis.Horizontal,
+            referenceBackground.rect.width
+        );
+
+        hiddenImage.SetSizeWithCurrentAnchors(
+            RectTransform.Axis.Vertical,
+            referenceBackground.rect.height
+        );
+    }
+
+    void MatchHiddenImageToBackground()
+    {
+        if (hiddenImage == null || referenceBackground == null)
+        {
+            return;
+        }
+
+        hiddenImage.position = referenceBackground.position;
+        hiddenImage.rotation = referenceBackground.rotation;
+
+        Vector3 parentScale = hiddenImage.parent.lossyScale;
+        Vector3 backgroundScale = referenceBackground.lossyScale;
+
+        hiddenImage.localScale = new Vector3(
+            backgroundScale.x / parentScale.x,
+            backgroundScale.y / parentScale.y,
+            backgroundScale.z / parentScale.z
+        );
+
+        hiddenImage.SetSizeWithCurrentAnchors(
+            RectTransform.Axis.Horizontal,
+            referenceBackground.rect.width
+        );
+
+        hiddenImage.SetSizeWithCurrentAnchors(
+            RectTransform.Axis.Vertical,
+            referenceBackground.rect.height
+        );
     }
 }
