@@ -21,7 +21,10 @@ public class DialogueManager : MonoBehaviour
 
     [Header("Choice")]
     [SerializeField] private GameObject choiceButtonPrefab;
-    [SerializeField] private Transform choicesContainer;
+    [SerializeField] private Transform npcChoicesContainer;
+    [SerializeField] private CanvasGroup npcChoicesCanvasGroup;
+    [SerializeField] private Transform playerChoicesContainer;
+    [SerializeField] private CanvasGroup playerChoicesCanvasGroup;
 
     [Header("Settings")]
     [SerializeField] private Sprite playerPortrait;
@@ -41,8 +44,15 @@ public class DialogueManager : MonoBehaviour
     private Coroutine _fadeRoutine;
     private System.Action _advanceAction;
     private bool _canAdvance;
+    private bool _fadingIn;
 
     public bool IsActive { get; private set; }
+
+    private Transform ActiveChoicesContainer =>
+        _activePanel == _playerPanel ? playerChoicesContainer : npcChoicesContainer;
+
+    private CanvasGroup ActiveChoicesCanvasGroup =>
+        _activePanel == _playerPanel ? playerChoicesCanvasGroup : npcChoicesCanvasGroup;
 
     public void StartDialogue(StoryEventSO storyEvent)
     {
@@ -57,7 +67,6 @@ public class DialogueManager : MonoBehaviour
         foreach (var node in storyEvent.dialogueNodes)
             _nodeMap[node.nodeId] = node;
 
-        // 实例化两个面板，默认隐藏
         if (_npcPanel == null && npcPanelPrefab != null)
         {
             _npcPanel = Instantiate(npcPanelPrefab, dialogueCanvas);
@@ -69,8 +78,8 @@ public class DialogueManager : MonoBehaviour
             _playerPanel.Hide();
         }
 
-        // 选项容器置顶，防止被面板遮挡
-        choicesContainer.SetAsLastSibling();
+        npcChoicesContainer.SetAsLastSibling();
+        playerChoicesContainer.SetAsLastSibling();
 
         IsActive = true;
         ShowNode(_currentEvent.dialogueNodes[0].nodeId);
@@ -78,11 +87,23 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
-        if (!IsActive || !_canAdvance) return;
+        if (!IsActive) return;
 
         if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.F))
         {
-            _advanceAction?.Invoke();
+            // 打字中 → 跳过打字
+            if (_activePanel != null && _activePanel.IsTyping)
+            {
+                _activePanel.Complete();
+                return;
+            }
+
+            // 淡入中不响应推进
+            if (_fadingIn) return;
+
+            // 打字完毕可推进 → 执行下一步
+            if (_canAdvance)
+                _advanceAction?.Invoke();
         }
     }
 
@@ -94,49 +115,53 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        // 选择面板
+        _canAdvance = false;
+        _advanceAction = null;
+
+        ClearAllChoices();
+
         var panel = PickPanel(node);
-        SwitchPanel(panel, node);
+        SwitchPanel(panel, node, () => OnTypingComplete(node));
 
-        // 刷新选项
-        foreach (Transform child in choicesContainer)
-            Destroy(child.gameObject);
+        _fadingIn = true;
+        if (_fadeRoutine != null) StopCoroutine(_fadeRoutine);
+        _fadeRoutine = StartCoroutine(FadeIn());
+    }
 
+    private void OnTypingComplete(DialogueNode node)
+    {
+        // 打字完成后才显示选项/继续/关闭
         if (node.choices != null && node.choices.Length > 0)
         {
-            _canAdvance = false;
             foreach (var choice in node.choices)
                 CreateChoiceButton(choice.choiceText, () => OnChoiceSelected(choice));
+            if (ActiveChoicesCanvasGroup != null)
+                StartCoroutine(FadeCanvasGroup(ActiveChoicesCanvasGroup, 0f, 1f));
         }
         else if (node.nextNodeId >= 0)
         {
             _canAdvance = true;
-            _advanceAction = () => OnChoiceSelected(node.nextNodeId);
+            _advanceAction = () => OnAdvance(node.nextNodeId);
         }
         else
         {
             _canAdvance = true;
             _advanceAction = EndDialogue;
         }
-
-        if (_fadeRoutine != null) StopCoroutine(_fadeRoutine);
-        _fadeRoutine = StartCoroutine(FadeIn());
     }
 
     private DialoguePanel PickPanel(DialogueNode node)
     {
-        // 内心独白 → 始终用主角面板
         if (_currentEvent.dialogueType == DialogueType.InnerMonologue)
             return _playerPanel;
 
-        // 对话 → 有 name 的是 NPC，没有的是主角
         if (string.IsNullOrEmpty(node.speakerName))
             return _playerPanel;
 
         return _npcPanel;
     }
 
-    private void SwitchPanel(DialoguePanel newPanel, DialogueNode node)
+    private void SwitchPanel(DialoguePanel newPanel, DialogueNode node, System.Action onTypingComplete)
     {
         if (_activePanel != null && _activePanel != newPanel)
             _activePanel.Hide();
@@ -146,12 +171,12 @@ public class DialogueManager : MonoBehaviour
         var isPlayer = newPanel == _playerPanel;
         var portrait = isPlayer ? playerPortrait : GetPortrait(node.speakerName);
         var speaker = _currentEvent.dialogueType == DialogueType.InnerMonologue ? "" : node.speakerName;
-        _activePanel.Show(speaker, node.text, portrait);
+        _activePanel.Show(speaker, node.text, portrait, !isPlayer, onTypingComplete);
     }
 
     private void CreateChoiceButton(string text, System.Action onClick)
     {
-        var btnObj = Instantiate(choiceButtonPrefab, choicesContainer);
+        var btnObj = Instantiate(choiceButtonPrefab, ActiveChoicesContainer);
         var label = btnObj.GetComponentInChildren<TextMeshProUGUI>();
         if (label != null) label.text = text;
         var btn = btnObj.GetComponent<Button>();
@@ -163,6 +188,11 @@ public class DialogueManager : MonoBehaviour
         StartCoroutine(ShowResponseThenAdvance(choice));
     }
 
+    private void OnAdvance(int nextNodeId)
+    {
+        StartCoroutine(FadeOutThenShow(nextNodeId));
+    }
+
     private void OnChoiceSelected(int nextNodeId)
     {
         StartCoroutine(FadeOutThenShow(nextNodeId));
@@ -170,28 +200,39 @@ public class DialogueManager : MonoBehaviour
 
     private IEnumerator ShowResponseThenAdvance(DialogueChoice choice)
     {
+        _canAdvance = false;
         yield return Fade(1f, 0f);
 
-        // 切到主角面板显示回应文本
+        // 选项按钮渐隐
+        if (ActiveChoicesCanvasGroup != null)
+            yield return FadeCanvasGroup(ActiveChoicesCanvasGroup, 1f, 0f);
+
+        ClearAllChoices();
+
         if (_npcPanel != null) _npcPanel.Hide();
         _activePanel = _playerPanel;
-        _playerPanel.Show("", choice.responseText, playerPortrait);
+        _playerPanel.Show("", choice.responseText, playerPortrait, true, () =>
+        {
+            if (_nodeMap.ContainsKey(choice.nextNodeId))
+            {
+                _canAdvance = true;
+                _advanceAction = () => OnAdvance(choice.nextNodeId);
+            }
+            else
+            {
+                _canAdvance = true;
+                _advanceAction = EndDialogue;
+            }
+        });
 
-        // 清除旧选项
-        foreach (Transform child in choicesContainer)
-            Destroy(child.gameObject);
-
-        _canAdvance = true;
-        if (_nodeMap.ContainsKey(choice.nextNodeId))
-            _advanceAction = () => OnChoiceSelected(choice.nextNodeId);
-        else
-            _advanceAction = EndDialogue;
-
+        _fadingIn = true;
         yield return Fade(0f, 1f);
+        _fadingIn = false;
     }
 
     private IEnumerator FadeOutThenShow(int nextNodeId)
     {
+        _canAdvance = false;
         yield return Fade(1f, 0f);
         ShowNode(nextNodeId);
     }
@@ -213,12 +254,14 @@ public class DialogueManager : MonoBehaviour
         IsActive = false;
         _currentEvent = null;
         _nodeMap = null;
+        Debug.Log("[DialogueManager] 对话结束，触发 onDialogueEnded");
         onDialogueEnded?.Invoke();
     }
 
     private IEnumerator FadeIn()
     {
         yield return Fade(0f, 1f);
+        _fadingIn = false;
     }
 
     private IEnumerator Fade(float from, float to)
@@ -235,6 +278,29 @@ public class DialogueManager : MonoBehaviour
         }
         if (_npcPanel != null) _npcPanel.SetAlpha(to);
         if (_playerPanel != null) _playerPanel.SetAlpha(to);
+    }
+
+    private IEnumerator FadeCanvasGroup(CanvasGroup cg, float from, float to)
+    {
+        float elapsed = 0f;
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            cg.alpha = Mathf.Lerp(from, to, fadeCurve.Evaluate(elapsed / fadeDuration));
+            yield return null;
+        }
+        cg.alpha = to;
+    }
+
+    private void ClearAllChoices()
+    {
+        if (npcChoicesCanvasGroup != null) npcChoicesCanvasGroup.alpha = 0f;
+        if (playerChoicesCanvasGroup != null) playerChoicesCanvasGroup.alpha = 0f;
+
+        foreach (Transform child in npcChoicesContainer)
+            Destroy(child.gameObject);
+        foreach (Transform child in playerChoicesContainer)
+            Destroy(child.gameObject);
     }
 
     private Sprite GetPortrait(string speakerName)

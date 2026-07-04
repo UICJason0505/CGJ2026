@@ -7,6 +7,7 @@ public class StoryEventListener : MonoBehaviour
 
     [Header("Dialogue")]
     [SerializeField] private DialogueManager dialogueManager;
+    [SerializeField] private StorylineController storylineController;
 
     [Header("Description")]
     [SerializeField] private Transform descriptionCanvas;
@@ -16,6 +17,23 @@ public class StoryEventListener : MonoBehaviour
     [SerializeField] private UnityEvent<StoryEventSO> onDescription;
     [SerializeField] private UnityEvent<string> onAnimation;
     [SerializeField] private UnityEvent onFunction;
+
+    private void Start()
+    {
+        if (dialogueManager != null && storylineController != null)
+        {
+            dialogueManager.onDialogueEnded.AddListener(() =>
+            {
+                Debug.Log("[Listener] 对话结束，推进序号");
+                storylineController.ForceNextSequence();
+            });
+            Debug.Log("[Listener] 已订阅 dialogueManager.onDialogueEnded");
+        }
+        else
+        {
+            Debug.LogWarning($"[Listener] 订阅失败: dm={dialogueManager != null}, sc={storylineController != null}");
+        }
+    }
 
     private void OnEnable()
     {

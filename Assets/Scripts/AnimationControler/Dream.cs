@@ -4,6 +4,7 @@ using UnityEngine;
 public class Dream : MonoBehaviour
 {
     [Header("References")]
+    [SerializeField] private StorylineController storylineController;
     [SerializeField] private StoryEventListener eventListener;
 
     [Header("Buttons")]
@@ -34,12 +35,26 @@ public class Dream : MonoBehaviour
         InitButton(button3, out _canvasGroup3);
 
         _currentStep = 0;
+
+        if (storylineController != null)
+            storylineController.NextPhase();
     }
 
     private void Update()
     {
         if (!Input.GetKeyDown(KeyCode.W)) return;
         if (eventListener != null && eventListener.IsBusy) return;
+
+        // 检查对应按钮的事件是否可触发
+        var targetEvent = _currentStep switch
+        {
+            0 => onButton1Shown,
+            1 => onButton2Shown,
+            2 => onButton3Shown,
+            _ => null
+        };
+        if (storylineController != null && targetEvent != null && !storylineController.CanTriggerEvent(targetEvent))
+            return;
 
         _currentStep++;
         switch (_currentStep)
@@ -73,15 +88,15 @@ public class Dream : MonoBehaviour
         switch (targetIndex)
         {
             case 1:
-                onButton1Shown?.Raise();
+                storylineController?.TryRaiseEvent(onButton1Shown);
                 yield return ShowButtonAnim(button1, _canvasGroup1);
                 break;
             case 2:
-                onButton2Shown?.Raise();
+                storylineController?.TryRaiseEvent(onButton2Shown);
                 yield return ShowButtonAnim(button2, _canvasGroup2);
                 break;
             case 3:
-                onButton3Shown?.Raise();
+                storylineController?.TryRaiseEvent(onButton3Shown);
                 yield return ShowButtonAnim(button3, _canvasGroup3);
                 break;
         }
