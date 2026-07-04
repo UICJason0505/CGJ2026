@@ -567,6 +567,7 @@ MonoBehaviour:
     xminus: -5.25
     xplus: 5.25
     moveSpeed: 2
+  canvasToToggle: {fileID: 730164906}
 --- !u!1 &1502702565
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,6 +13,7 @@ public class CameraSettings : MonoBehaviour
     }
 
     public CameraData data;
+    public GameObject canvasToToggle;
 
     void Start()
     {
@@ -21,6 +22,12 @@ public class CameraSettings : MonoBehaviour
 
     void Update()
     {
+        
+        if (Input.GetKeyDown(KeyCode.F) && canvasToToggle != null)
+        {
+            canvasToToggle.SetActive(!canvasToToggle.activeSelf);
+        }
+
         Vector3 pos = transform.position;
 
         if (Input.GetKey(KeyCode.A))
