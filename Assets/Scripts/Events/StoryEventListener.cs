@@ -21,18 +21,11 @@ public class StoryEventListener : MonoBehaviour
     private void Start()
     {
         if (dialogueManager != null && storylineController != null)
-        {
             dialogueManager.onDialogueEnded.AddListener(() =>
             {
                 Debug.Log("[Listener] 对话结束，推进序号");
                 storylineController.ForceNextSequence();
             });
-            Debug.Log("[Listener] 已订阅 dialogueManager.onDialogueEnded");
-        }
-        else
-        {
-            Debug.LogWarning($"[Listener] 订阅失败: dm={dialogueManager != null}, sc={storylineController != null}");
-        }
     }
 
     private void OnEnable()
@@ -84,7 +77,11 @@ public class StoryEventListener : MonoBehaviour
                     var instance = Instantiate(descriptionTemplate, descriptionCanvas);
                     var popup = instance.GetComponent<DescriptionPopup>();
                     if (popup != null)
-                        popup.Init(raisedEvent.popupSprite, raisedEvent.popupDescription);
+                        popup.Init(raisedEvent.popupSprite, raisedEvent.popupDescription, () =>
+                        {
+                            Debug.Log("[Listener] 描述弹窗关闭，推进序号");
+                            storylineController?.ForceNextSequence();
+                        });
                 }
                 onDescription?.Invoke(raisedEvent);
                 break;

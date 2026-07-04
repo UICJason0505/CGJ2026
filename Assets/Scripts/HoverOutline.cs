@@ -19,7 +19,8 @@ public class HoverOutline : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         if (_image != null)
         {
             _originalColor = _image.color;
-            _image.alphaHitTestMinimumThreshold = 0.5f;
+            try { _image.alphaHitTestMinimumThreshold = 0.5f; }
+            catch (System.Exception) { /* 需要 Sprite 开 Read/Write Enabled */ }
         }
     }
 

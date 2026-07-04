@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f42ea7f20a349574d9bbd674990e8af1, type: 3}
   m_Name: END
   m_EditorClassIdentifier: 
-  outcomeType: 0
+  outcomeType: 3
   description: 
   dialogueType: 0
   dialogueNodes: []
