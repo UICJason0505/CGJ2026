@@ -1,114 +1,90 @@
 using UnityEngine;
-using UnityEngine.UI;
 
-public class CameraCanvasMaskController : MonoBehaviour
+public class CameraController : MonoBehaviour
 {
-    [System.Serializable]
-    public struct CameraData
-    {
-        public float xminus;
-        public float xplus;
-        public float moveSpeed;
-    }
+    public GameObject cameraMaskObject;
+    public RectTransform cameraMaskRect;
+    public Canvas canvas;
 
-    public CameraData data;
+    public bool startOpen = false;
 
-    public Camera mainCamera;
-
-    public GameObject canvasToToggle;
-
-    public bool pauseGameWhenCanvasOpen = true;
-
-    public RectTransform maskImage;
-
-    public RectTransform rawImage;
-
-    private Vector3 cameraStartPos;
-    private Vector2 rawImageStartAnchoredPos;
+    public Vector2 xLimit = new Vector2(-800f, 800f);
+    public Vector2 yLimit = new Vector2(-450f, 450f);
 
     void Start()
     {
-        canvasToToggle.SetActive(false);
-        if (mainCamera == null)
+        if (cameraMaskObject != null)
         {
-            mainCamera = Camera.main;
+            cameraMaskObject.SetActive(startOpen);
         }
 
-        if (mainCamera != null)
+        if (cameraMaskRect == null && cameraMaskObject != null)
         {
-            cameraStartPos = mainCamera.transform.position;
-        }
-
-        if (rawImage != null)
-        {
-            rawImageStartAnchoredPos = rawImage.anchoredPosition;
+            cameraMaskRect = cameraMaskObject.GetComponent<RectTransform>();
         }
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F) && canvasToToggle != null)
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            canvasToToggle.SetActive(!canvasToToggle.activeSelf);
+            ToggleCameraMask();
         }
 
-        bool isCanvasOpen = canvasToToggle == null || canvasToToggle.activeSelf;
-
-        if (pauseGameWhenCanvasOpen && canvasToToggle != null)
+        if (cameraMaskObject != null && cameraMaskObject.activeSelf)
         {
-            Time.timeScale = isCanvasOpen ? 0f : 1f;
+            FollowMouseUI();
         }
-
-        MoveCamera();
-
-        KeepRawImageVisuallyStill();
     }
 
-    void MoveCamera()
+    void ToggleCameraMask()
     {
-        if (mainCamera == null)
+        if (cameraMaskObject == null)
         {
             return;
         }
 
-        Vector3 pos = mainCamera.transform.position;
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            pos.x -= data.moveSpeed * Time.unscaledDeltaTime;
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            pos.x += data.moveSpeed * Time.unscaledDeltaTime;
-        }
-
-        pos.x = Mathf.Clamp(pos.x, data.xminus, data.xplus);
-
-        mainCamera.transform.position = pos;
+        cameraMaskObject.SetActive(!cameraMaskObject.activeSelf);
     }
 
-    void KeepRawImageVisuallyStill()
+    void FollowMouseUI()
     {
-        if (mainCamera == null || rawImage == null)
+        if (cameraMaskRect == null)
         {
             return;
         }
 
-        float cameraMoveX = mainCamera.transform.position.x - cameraStartPos.x;
+        RectTransform parentRect = cameraMaskRect.parent as RectTransform;
 
-        float uiMoveX = cameraMoveX * 100f;
+        if (parentRect == null)
+        {
+            return;
+        }
 
-        rawImage.anchoredPosition = rawImageStartAnchoredPos - new Vector2(uiMoveX, 0f);
-    }
+        Camera uiCamera = null;
 
-    void OnDisable()
-    {
-        Time.timeScale = 1f;
-    }
+        if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
+        {
+            uiCamera = canvas.worldCamera;
+        }
 
-    void OnDestroy()
-    {
-        Time.timeScale = 1f;
+        Vector2 localMousePos;
+
+        bool success = RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            parentRect,
+            Input.mousePosition,
+            uiCamera,
+            out localMousePos
+        );
+
+        if (!success)
+        {
+            return;
+        }
+
+        localMousePos.x = Mathf.Clamp(localMousePos.x, xLimit.x, xLimit.y);
+        localMousePos.y = Mathf.Clamp(localMousePos.y, yLimit.x, yLimit.y);
+
+        cameraMaskRect.anchoredPosition = localMousePos;
     }
 }
