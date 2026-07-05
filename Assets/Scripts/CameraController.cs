@@ -144,6 +144,9 @@ public class MaskCameraController : MonoBehaviour
         Vector3 parentScale = hiddenImage.parent.lossyScale;
         Vector3 backgroundScale = referenceBackground.lossyScale;
 
+        if (parentScale.x == 0f || parentScale.y == 0f || parentScale.z == 0f)
+            return;
+
         hiddenImage.localScale = new Vector3(
             backgroundScale.x / parentScale.x,
             backgroundScale.y / parentScale.y,

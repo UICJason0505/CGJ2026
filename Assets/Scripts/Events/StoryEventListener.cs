@@ -13,6 +13,8 @@ public class StoryEventListener : MonoBehaviour
     [SerializeField] private Transform descriptionCanvas;
     [SerializeField] private GameObject descriptionTemplate;
 
+    private int _activeDescriptionCount;
+
     [Header("Outcome Handlers")]
     [SerializeField] private UnityEvent<StoryEventSO> onDescription;
     [SerializeField] private UnityEvent<string> onAnimation;
@@ -44,22 +46,28 @@ public class StoryEventListener : MonoBehaviour
         }
     }
 
+    private System.Collections.IEnumerator DelayedAdvanceSequence()
+    {
+        yield return null; // 等一帧，确保 Destroy 生效
+        storylineController?.ForceNextSequence();
+    }
+
     public void ClearDescriptions()
     {
+        _activeDescriptionCount = 0;
         if (descriptionCanvas == null) return;
         for (int i = descriptionCanvas.childCount - 1; i >= 0; i--)
             Destroy(descriptionCanvas.GetChild(i).gameObject);
     }
 
     public bool IsBusy =>
-        (descriptionCanvas != null && descriptionCanvas.childCount > 0)
-        || (dialogueManager != null && dialogueManager.IsActive);
+        dialogueManager != null && dialogueManager.IsActive;
 
     public void OnEventRaised(StoryEventSO raisedEvent)
     {
         if (IsBusy)
         {
-            Debug.Log($"[Listener] 忙碌中，拦截事件: {raisedEvent.name}");
+            Debug.Log($"[Listener] 忙碌中，拦截事件: {raisedEvent.name} (descCount={_activeDescriptionCount}, diaActive={dialogueManager != null && dialogueManager.IsActive})");
             return;
         }
 
@@ -77,11 +85,15 @@ public class StoryEventListener : MonoBehaviour
                     var instance = Instantiate(descriptionTemplate, descriptionCanvas);
                     var popup = instance.GetComponent<DescriptionPopup>();
                     if (popup != null)
+                    {
+                        _activeDescriptionCount++;
                         popup.Init(raisedEvent.popupSprite, raisedEvent.popupDescription, () =>
                         {
+                            _activeDescriptionCount--;
                             Debug.Log("[Listener] 描述弹窗关闭，推进序号");
-                            storylineController?.ForceNextSequence();
+                            StartCoroutine(DelayedAdvanceSequence());
                         });
+                    }
                 }
                 onDescription?.Invoke(raisedEvent);
                 break;

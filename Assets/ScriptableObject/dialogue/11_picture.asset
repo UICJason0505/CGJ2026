@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f42ea7f20a349574d9bbd674990e8af1, type: 3}
+  m_Name: 11_picture
+  m_EditorClassIdentifier: 
+  outcomeType: 0
+  description: 
+  dialogueType: 1
+  dialogueNodes:
+  - nodeId: 0
+    text: "\u653E\u5728\u5E8A\u5934\u7684\u76F8\u6846\uFF0C\u5E94\u8BE5\u5BF9\u6211\u5F88\u91CD\u8981"
+    speakerName: 
+    choices: []
+    nextNodeId: 1
+  - nodeId: 1
+    text: "\u4F46\u4E3A\u4EC0\u4E48\u6211\u770B\u4E0D\u6E05\u7167\u7247\uFF1F\u50CF\u88AB\u6C34\u6CE1\u8FC7\u7684\u70AD\u7B14\u7D20\u63CF\u3002"
+    speakerName: 
+    choices: []
+    nextNodeId: 2
+  - nodeId: 2
+    text: "\u8F6E\u5ED3\u8FD8\u5728\uFF0C\u7709\u773C\u5374\u6563\u4E86"
+    speakerName: 
+    choices: []
+    nextNodeId: -1
+  popupSprite: {fileID: 0}
+  popupDescription: 
+  animationTriggerName: 

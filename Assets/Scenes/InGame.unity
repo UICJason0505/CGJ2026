@@ -335,7 +335,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -444,6 +444,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storyEvent: {fileID: 11400000, guid: b8bca88d8f96fbc439cd979cba8c2ec3, type: 2}
+  storyEvents: []
+  delayBetweenEvents: 0.1
 --- !u!114 &139419254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -807,6 +809,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storyEvent: {fileID: 11400000, guid: b8bca88d8f96fbc439cd979cba8c2ec3, type: 2}
+  storyEvents: []
+  delayBetweenEvents: 0.1
 --- !u!114 &148992692
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -931,7 +935,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1164,7 +1168,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &432484045
@@ -1219,6 +1223,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storyEvent: {fileID: 11400000, guid: deaa351056f7c404f9dda58d64d4aaef, type: 2}
+  storyEvents: []
+  delayBetweenEvents: 0.1
 --- !u!114 &432484048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1560,6 +1566,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storyEvent: {fileID: 11400000, guid: 144da74a6376a6a46b71fe88d12a92bb, type: 2}
+  storyEvents: []
+  delayBetweenEvents: 0.1
 --- !u!1 &625809089
 GameObject:
   m_ObjectHideFlags: 0
@@ -1647,6 +1655,7 @@ GameObject:
   - component: {fileID: 659437688}
   - component: {fileID: 659437687}
   - component: {fileID: 659437686}
+  - component: {fileID: 659437689}
   m_Layer: 5
   m_Name: HUA_JIA
   m_TagString: Untagged
@@ -1716,7 +1725,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 659437687}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 659437689}
+        m_TargetAssemblyTypeName: StoryEventRaiser, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &659437687
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1755,6 +1776,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 659437684}
   m_CullTransparentMesh: 1
+--- !u!114 &659437689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 659437684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c72c9f571c4fc44ba79cbea725b08eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  storyEvent: {fileID: 11400000, guid: 487d741d6144871449255b8b6a52fa89, type: 2}
+  storyEvents: []
+  delayBetweenEvents: 0.1
 --- !u!1 &674219328
 GameObject:
   m_ObjectHideFlags: 0
@@ -1984,7 +2020,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000061035156, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0.000061035, y: -0.000030518}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &710360041
@@ -2043,7 +2079,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &810374900
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2482,6 +2518,7 @@ GameObject:
   - component: {fileID: 1314780187}
   - component: {fileID: 1314780186}
   - component: {fileID: 1314780185}
+  - component: {fileID: 1314780188}
   m_Layer: 5
   m_Name: 'memo '
   m_TagString: Untagged
@@ -2551,7 +2588,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1314780186}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1314780188}
+        m_TargetAssemblyTypeName: StoryEventRaiser, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1314780186
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2590,6 +2639,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1314780183}
   m_CullTransparentMesh: 1
+--- !u!114 &1314780188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1314780183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c72c9f571c4fc44ba79cbea725b08eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  storyEvent: {fileID: 11400000, guid: c9037466fbab97344ad5e2f225eacba3, type: 2}
+  storyEvents:
+  - {fileID: 11400000, guid: 5bd908e18cfa88f44b93d105f3ef5b62, type: 2}
+  delayBetweenEvents: 0.1
 --- !u!1 &1400608549
 GameObject:
   m_ObjectHideFlags: 0
@@ -2671,7 +2736,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!224 &1400608552
@@ -2712,7 +2777,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1487588798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2913,6 +2978,7 @@ GameObject:
   - component: {fileID: 1600146072}
   - component: {fileID: 1600146071}
   - component: {fileID: 1600146070}
+  - component: {fileID: 1600146073}
   m_Layer: 5
   m_Name: Flower
   m_TagString: Untagged
@@ -2982,7 +3048,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1600146071}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1600146073}
+        m_TargetAssemblyTypeName: StoryEventRaiser, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1600146071
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3021,6 +3099,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1600146068}
   m_CullTransparentMesh: 1
+--- !u!114 &1600146073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600146068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c72c9f571c4fc44ba79cbea725b08eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  storyEvent: {fileID: 11400000, guid: 8f2fb510990bd2f46bf7148ce3ab173f, type: 2}
+  storyEvents: []
+  delayBetweenEvents: 0.1
 --- !u!1 &1646954244
 GameObject:
   m_ObjectHideFlags: 0
@@ -3298,6 +3391,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storyEvent: {fileID: 11400000, guid: c8e92b0846d87ca46bd4b4aa263534e3, type: 2}
+  storyEvents: []
+  delayBetweenEvents: 0.1
 --- !u!114 &1724916358
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3426,81 +3521,165 @@ MonoBehaviour:
   phases:
   - phaseId: 0
     phaseName: Dream
+    canvas: {fileID: 810374903}
     events:
     - storyEvent: {fileID: 11400000, guid: b1f18f04d034881418459ed53fa3721c, type: 2}
       sequenceIndex: 0
       triggerMode: 0
-      followAfterEventIndex: -1
+      followAfterSequence: -1
       repeatable: 0
       endOfPhase: 0
       skipInTest: 0
     - storyEvent: {fileID: 11400000, guid: f8aa3da7b08f0c643a93a4cfa61227cb, type: 2}
       sequenceIndex: 1
       triggerMode: 1
-      followAfterEventIndex: -1
+      followAfterSequence: -1
       repeatable: 0
       endOfPhase: 0
       skipInTest: 0
     - storyEvent: {fileID: 11400000, guid: deaa351056f7c404f9dda58d64d4aaef, type: 2}
       sequenceIndex: 2
       triggerMode: 1
-      followAfterEventIndex: -1
+      followAfterSequence: -1
       repeatable: 1
       endOfPhase: 0
       skipInTest: 0
     - storyEvent: {fileID: 11400000, guid: c8a1283c35da5564fb90f482eddc3f80, type: 2}
       sequenceIndex: 3
       triggerMode: 1
-      followAfterEventIndex: -1
+      followAfterSequence: -1
       repeatable: 0
       endOfPhase: 0
       skipInTest: 0
     - storyEvent: {fileID: 11400000, guid: 144da74a6376a6a46b71fe88d12a92bb, type: 2}
       sequenceIndex: 4
       triggerMode: 1
-      followAfterEventIndex: -1
+      followAfterSequence: -1
       repeatable: 1
       endOfPhase: 0
       skipInTest: 0
     - storyEvent: {fileID: 11400000, guid: a278251193657234486eda77fed6a12f, type: 2}
       sequenceIndex: 5
       triggerMode: 1
-      followAfterEventIndex: -1
+      followAfterSequence: -1
       repeatable: 0
       endOfPhase: 0
       skipInTest: 0
     - storyEvent: {fileID: 11400000, guid: b8bca88d8f96fbc439cd979cba8c2ec3, type: 2}
       sequenceIndex: 6
       triggerMode: 1
-      followAfterEventIndex: -1
+      followAfterSequence: -1
       repeatable: 1
       endOfPhase: 0
       skipInTest: 0
     - storyEvent: {fileID: 11400000, guid: c8e92b0846d87ca46bd4b4aa263534e3, type: 2}
       sequenceIndex: 6
       triggerMode: 1
-      followAfterEventIndex: -1
+      followAfterSequence: -1
       repeatable: 1
       endOfPhase: 0
       skipInTest: 0
     - storyEvent: {fileID: 11400000, guid: 9790250890e37024ea928df370b90d7b, type: 2}
       sequenceIndex: 12
-      triggerMode: 2
-      followAfterEventIndex: 6
+      triggerMode: 0
+      followAfterSequence: -1
       repeatable: 0
       endOfPhase: 1
       skipInTest: 0
   - phaseId: 1
     phaseName: BedRoom
+    canvas: {fileID: 1493242954}
     events:
-    - storyEvent: {fileID: 0}
+    - storyEvent: {fileID: 11400000, guid: ad7dcdb26d1ad14419df46b1c129935b, type: 2}
       sequenceIndex: 0
       triggerMode: 0
-      followAfterEventIndex: -1
+      followAfterSequence: -1
       repeatable: 0
       endOfPhase: 0
       skipInTest: 0
+    - storyEvent: {fileID: 11400000, guid: 487d741d6144871449255b8b6a52fa89, type: 2}
+      sequenceIndex: 1
+      triggerMode: 1
+      followAfterSequence: -1
+      repeatable: 1
+      endOfPhase: 0
+      skipInTest: 0
+    - storyEvent: {fileID: 11400000, guid: 14de928adb86b9948abe91a0f3ca1c96, type: 2}
+      sequenceIndex: 2
+      triggerMode: 1
+      followAfterSequence: -1
+      repeatable: 1
+      endOfPhase: 0
+      skipInTest: 0
+    - storyEvent: {fileID: 11400000, guid: 20ac54ed1f900e64a911b122c0a0dfce, type: 2}
+      sequenceIndex: 2
+      triggerMode: 1
+      followAfterSequence: 2
+      repeatable: 0
+      endOfPhase: 0
+      skipInTest: 0
+    - storyEvent: {fileID: 11400000, guid: c9037466fbab97344ad5e2f225eacba3, type: 2}
+      sequenceIndex: 2
+      triggerMode: 1
+      followAfterSequence: -1
+      repeatable: 1
+      endOfPhase: 0
+      skipInTest: 0
+    - storyEvent: {fileID: 11400000, guid: 5bd908e18cfa88f44b93d105f3ef5b62, type: 2}
+      sequenceIndex: 2
+      triggerMode: 1
+      followAfterSequence: 3
+      repeatable: 1
+      endOfPhase: 0
+      skipInTest: 0
+    - storyEvent: {fileID: 11400000, guid: 8f2fb510990bd2f46bf7148ce3ab173f, type: 2}
+      sequenceIndex: 1
+      triggerMode: 1
+      followAfterSequence: -1
+      repeatable: 1
+      endOfPhase: 0
+      skipInTest: 0
+    - storyEvent: {fileID: 11400000, guid: 3de738303bc8db240937cc58f5865885, type: 2}
+      sequenceIndex: 1
+      triggerMode: 1
+      followAfterSequence: -1
+      repeatable: 1
+      endOfPhase: 0
+      skipInTest: 0
+    - storyEvent: {fileID: 11400000, guid: 1b93e5ffd2741e0449981baf55717d06, type: 2}
+      sequenceIndex: 1
+      triggerMode: 1
+      followAfterSequence: -1
+      repeatable: 1
+      endOfPhase: 0
+      skipInTest: 0
   startPhaseId: 1
+  phaseFadeDuration: 0.5
+  phaseFadeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _currentPhaseIndex: -1
 --- !u!4 &1768223077
 Transform:
   m_ObjectHideFlags: 0
@@ -3538,6 +3717,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b1f18f04d034881418459ed53fa3721c, type: 2}
   - {fileID: 11400000, guid: c8e92b0846d87ca46bd4b4aa263534e3, type: 2}
   - {fileID: 11400000, guid: 9790250890e37024ea928df370b90d7b, type: 2}
+  - {fileID: 11400000, guid: ad7dcdb26d1ad14419df46b1c129935b, type: 2}
+  - {fileID: 11400000, guid: 487d741d6144871449255b8b6a52fa89, type: 2}
+  - {fileID: 11400000, guid: 14de928adb86b9948abe91a0f3ca1c96, type: 2}
+  - {fileID: 11400000, guid: 20ac54ed1f900e64a911b122c0a0dfce, type: 2}
+  - {fileID: 11400000, guid: c9037466fbab97344ad5e2f225eacba3, type: 2}
+  - {fileID: 11400000, guid: 8f2fb510990bd2f46bf7148ce3ab173f, type: 2}
+  - {fileID: 11400000, guid: 3de738303bc8db240937cc58f5865885, type: 2}
+  - {fileID: 11400000, guid: 5bd908e18cfa88f44b93d105f3ef5b62, type: 2}
+  - {fileID: 11400000, guid: 1b93e5ffd2741e0449981baf55717d06, type: 2}
   dialogueManager: {fileID: 1768223079}
   storylineController: {fileID: 1768223076}
   descriptionCanvas: {fileID: 1704312629}
@@ -3720,6 +3908,7 @@ GameObject:
   - component: {fileID: 1897785046}
   - component: {fileID: 1897785045}
   - component: {fileID: 1897785044}
+  - component: {fileID: 1897785047}
   m_Layer: 5
   m_Name: 'fish tank '
   m_TagString: Untagged
@@ -3790,7 +3979,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1897785045}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1897785047}
+        m_TargetAssemblyTypeName: StoryEventRaiser, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1897785045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3829,6 +4030,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1897785042}
   m_CullTransparentMesh: 1
+--- !u!114 &1897785047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1897785042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c72c9f571c4fc44ba79cbea725b08eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  storyEvent: {fileID: 11400000, guid: 14de928adb86b9948abe91a0f3ca1c96, type: 2}
+  storyEvents:
+  - {fileID: 11400000, guid: 20ac54ed1f900e64a911b122c0a0dfce, type: 2}
+  delayBetweenEvents: 0.1
 --- !u!1 &1917909994
 GameObject:
   m_ObjectHideFlags: 0
@@ -3906,7 +4123,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4148,7 +4365,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1990439481}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc6fe7dc13718dc419f00d7ac4546a12, type: 3}
   m_Name: 
@@ -4185,6 +4402,7 @@ GameObject:
   - component: {fileID: 2019874900}
   - component: {fileID: 2019874899}
   - component: {fileID: 2019874898}
+  - component: {fileID: 2019874901}
   m_Layer: 5
   m_Name: 'photo '
   m_TagString: Untagged
@@ -4254,7 +4472,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2019874899}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2019874901}
+        m_TargetAssemblyTypeName: StoryEventRaiser, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2019874899
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4293,6 +4523,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2019874896}
   m_CullTransparentMesh: 1
+--- !u!114 &2019874901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2019874896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c72c9f571c4fc44ba79cbea725b08eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  storyEvent: {fileID: 11400000, guid: 1b93e5ffd2741e0449981baf55717d06, type: 2}
+  storyEvents: []
+  delayBetweenEvents: 0.1
 --- !u!1 &2039545086
 GameObject:
   m_ObjectHideFlags: 0
@@ -4406,6 +4651,7 @@ GameObject:
   - component: {fileID: 2052633838}
   - component: {fileID: 2052633837}
   - component: {fileID: 2052633836}
+  - component: {fileID: 2052633839}
   m_Layer: 5
   m_Name: memo2
   m_TagString: Untagged
@@ -4475,7 +4721,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2052633837}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2052633839}
+        m_TargetAssemblyTypeName: StoryEventRaiser, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2052633837
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4514,6 +4772,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2052633834}
   m_CullTransparentMesh: 1
+--- !u!114 &2052633839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2052633834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c72c9f571c4fc44ba79cbea725b08eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  storyEvent: {fileID: 11400000, guid: 3de738303bc8db240937cc58f5865885, type: 2}
+  storyEvents: []
+  delayBetweenEvents: 0.1
 --- !u!1 &2097776345
 GameObject:
   m_ObjectHideFlags: 0

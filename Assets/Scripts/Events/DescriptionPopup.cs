@@ -21,6 +21,7 @@ public class DescriptionPopup : MonoBehaviour
 
         if (popupImage != null)
         {
+            popupImage.preserveAspect = true;
             popupImage.sprite = sprite;
             popupImage.enabled = sprite != null;
         }
@@ -38,6 +39,8 @@ public class DescriptionPopup : MonoBehaviour
     public void Close()
     {
         StopAllCoroutines();
+        _onClose?.Invoke();  // 立即通知，不等渐隐动画
+        _onClose = null;
         StartCoroutine(FadeOut());
     }
 
@@ -63,7 +66,6 @@ public class DescriptionPopup : MonoBehaviour
             yield return null;
         }
         canvasGroup.alpha = 0f;
-        _onClose?.Invoke();
         Destroy(gameObject);
     }
 }

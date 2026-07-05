@@ -1,26 +1,41 @@
+using System.Collections;
 using UnityEngine;
 
 public class StoryEventRaiser : MonoBehaviour
 {
     [SerializeField] private StoryEventSO storyEvent;
+    [SerializeField] private StoryEventSO[] storyEvents;
+    [SerializeField] private float delayBetweenEvents = 0.1f;
 
     public void Raise()
     {
-        if (storyEvent == null)
+        StartCoroutine(RaiseSequence());
+    }
+
+    private IEnumerator RaiseSequence()
+    {
+        if (storyEvent != null)
         {
-            Debug.LogWarning($"[Raiser] {name}: storyEvent 为空，未赋值！", this);
-            return;
+            TryFire(storyEvent);
+            yield return new WaitForSeconds(delayBetweenEvents);
         }
 
+        foreach (var e in storyEvents)
+        {
+            if (e != null)
+            {
+                TryFire(e);
+                yield return new WaitForSeconds(delayBetweenEvents);
+            }
+        }
+    }
+
+    private void TryFire(StoryEventSO e)
+    {
         var controller = FindObjectOfType<StorylineController>();
         if (controller != null)
-        {
-            controller.TryRaiseEvent(storyEvent);
-        }
+            controller.TryRaiseEvent(e);
         else
-        {
-            Debug.LogWarning($"[Raiser] {name}: 场景中无 StorylineController，直接触发", this);
-            storyEvent.Raise();
-        }
+            e.Raise();
     }
 }

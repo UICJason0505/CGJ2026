@@ -7,10 +7,16 @@ public class PhaseEndTrigger : MonoBehaviour
 
     public void EndPhase()
     {
-        if (storylineController != null)
+        if (storylineController == null) return;
+        var nextIndex = storylineController._currentPhaseIndex + 1;
+        if (nextIndex >= storylineController.Phases.Length)
         {
-            storylineController.startPhaseId++;
-            storylineController.GoToPhaseById(storylineController.startPhaseId);
+            Debug.LogWarning("[PhaseEndTrigger] 已经是最后一个 Phase");
+            return;
         }
+        var nextId = storylineController.Phases[nextIndex].phaseId;
+        Debug.Log($"[PhaseEndTrigger] 阶段 {storylineController.startPhaseId} → {nextId}");
+        storylineController.startPhaseId = nextId;
+        storylineController.GoToPhaseById(nextId);
     }
 }

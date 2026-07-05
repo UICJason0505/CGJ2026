@@ -26,6 +26,7 @@ public class DialoguePanel : MonoBehaviour
 
         if (speakerPortrait != null)
         {
+            speakerPortrait.preserveAspect = true;
             speakerPortrait.sprite = portrait;
             speakerPortrait.enabled = portrait != null;
         }
