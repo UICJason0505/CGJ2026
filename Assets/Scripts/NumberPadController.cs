@@ -1,214 +1,246 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class NumberPadController : MonoBehaviour
 {
-    [Header("Answer Display")]
+    [Header("Password Lock UI")]
+    [SerializeField] private GameObject passwordLockUI;
     [SerializeField] private TMP_Text answerText;
 
     [Header("Password")]
-    [SerializeField] private string correctPassword = "1234";
+    [SerializeField] private string correctPassword = "317";
 
-    [Header("Scene Transition")]
-    [SerializeField] private string nextSceneName;
-    [SerializeField] private GameObject uiRoot;
-
-    [Header("Password Lock UI")]
-    [SerializeField] private GameObject passwordLockUI;
-    [SerializeField] private Button lockButton;
+    [Header("Unlock Result")]
+    [SerializeField] private GameObject objectToShowAfterUnlock;
+    [SerializeField] private GameObject objectToHideAfterUnlock;
+    [SerializeField] private UnityEvent onUnlocked;
 
     [Header("Wrong Password Feedback")]
     [SerializeField] private float flashInterval = 0.15f;
 
-    private const int MaxLength = 4;
-
     private string currentInput = string.Empty;
-    private Color originalTextColor;
+    private Color originalTextColor = Color.black;
     private bool isProcessing;
+    private bool unlocked;
 
     private void Awake()
     {
-        EnsurePasswordLockReference();
-
-        if (answerText == null)
-            answerText = FindAnswerText();
-
-        if (uiRoot == null)
-            uiRoot = passwordLockUI;
-
-        if (passwordLockUI != null)
-            passwordLockUI.SetActive(false);
-
-        if (answerText != null)
-            originalTextColor = answerText.color;
-    }
-
-    private void EnsurePasswordLockReference()
-    {
         if (passwordLockUI == null)
         {
-            passwordLockUI = GameObject.Find("PasswordLock");
-            return;
+            passwordLockUI = gameObject;
         }
 
-        if (IsLockObject(passwordLockUI))
+        if (answerText == null)
         {
-            Debug.LogWarning("[NumberPadController] Password Lock UI 应拖入 PasswordLock 面板，不要拖 Lock 按钮。已尝试自动查找 PasswordLock。");
-            passwordLockUI = GameObject.Find("PasswordLock");
+            answerText = FindAnswerText();
         }
-    }
 
-    private TMP_Text FindAnswerText()
-    {
-        if (passwordLockUI != null)
+        if (answerText != null)
         {
-            foreach (var text in passwordLockUI.GetComponentsInChildren<TMP_Text>(true))
-            {
-                if (text.gameObject.name == "Answer")
-                    return text;
-            }
+            originalTextColor = answerText.color;
+            answerText.text = string.Empty;
         }
-
-        var answerObject = GameObject.Find("Answer");
-        return answerObject != null ? answerObject.GetComponent<TMP_Text>() : null;
     }
 
     private void Start()
     {
-        RegisterNumberButtons();
-        RegisterLockButton();
         RegisterEscButton();
     }
 
-    private void RegisterNumberButtons()
+    private TMP_Text FindAnswerText()
     {
-        var buttons = FindObjectsOfType<Button>(true);
-        foreach (var button in buttons)
+        TMP_Text[] texts = FindObjectsOfType<TMP_Text>(true);
+        foreach (TMP_Text text in texts)
         {
-            if (!button.gameObject.name.StartsWith("Number"))
-                continue;
-
-            var capturedButton = button;
-            capturedButton.onClick.AddListener(() => AppendDigitFromButton(capturedButton));
-        }
-    }
-
-    private void RegisterLockButton()
-    {
-        var lockObject = GetLockObject();
-        if (lockObject == null)
-        {
-            Debug.LogError("[NumberPadController] 未找到 Lock。请确认场景中有 Tag 为 Lock 的物体。");
-            return;
-        }
-
-        if (passwordLockUI == null)
-        {
-            Debug.LogError("[NumberPadController] 未找到 PasswordLock 面板。请在 Password Lock UI 字段拖入 PasswordLock。");
-            return;
-        }
-
-        if (lockObject.GetComponent<RectTransform>() != null)
-        {
-            lockButton = lockObject.GetComponent<Button>();
-            if (lockButton != null)
-                lockButton.onClick.AddListener(ShowPasswordLock);
-            return;
-        }
-
-        RegisterWorldLockClick(lockObject);
-    }
-
-    private GameObject GetLockObject()
-    {
-        if (lockButton != null)
-            return lockButton.gameObject;
-
-        var uiLockButton = FindUiLockButton();
-        if (uiLockButton != null)
-            return uiLockButton.gameObject;
-
-        return GameObject.FindGameObjectWithTag("Lock");
-    }
-
-    private static Button FindUiLockButton()
-    {
-        var buttons = Object.FindObjectsOfType<Button>(true);
-        foreach (var button in buttons)
-        {
-            if (IsLockObject(button.gameObject) && button.GetComponent<RectTransform>() != null)
-                return button;
+            if (text.gameObject.name == "Answer" || text.gameObject.name == "Text (TMP)")
+            {
+                return text;
+            }
         }
 
         return null;
     }
 
-    private void RegisterWorldLockClick(GameObject lockObject)
+    private void RegisterNumberButtons()
     {
-        EnsureCollider2D(lockObject);
+        Button[] buttons = FindObjectsOfType<Button>(true);
 
-        var handler = lockObject.GetComponent<LockWorldClickHandler>();
-        if (handler == null)
-            handler = lockObject.AddComponent<LockWorldClickHandler>();
-
-        handler.Initialize(this);
-    }
-
-    private static void EnsureCollider2D(GameObject lockObject)
-    {
-        if (lockObject.GetComponent<Collider2D>() != null)
-            return;
-
-        var spriteRenderer = lockObject.GetComponent<SpriteRenderer>();
-        var collider = lockObject.AddComponent<BoxCollider2D>();
-
-        if (spriteRenderer != null && spriteRenderer.sprite != null)
-            collider.size = spriteRenderer.sprite.bounds.size;
-    }
-
-    private static bool IsLockObject(GameObject gameObject)
-    {
-        if (gameObject.name == "PasswordLock")
-            return false;
-
-        return gameObject.CompareTag("Lock")
-            || gameObject.name == "Lock"
-            || gameObject.name == "LockButton";
-    }
-
-    public void ShowPasswordLock()
-    {
-        if (passwordLockUI == null)
+        foreach (Button button in buttons)
         {
-            Debug.LogError("[NumberPadController] PasswordLock 未设置，无法显示密码面板。");
-            return;
+            int digit = GetDigitFromButtonName(button.gameObject.name);
+
+            if (digit < 0)
+            {
+                continue;
+            }
+
+            button.onClick.AddListener(() => PressDigit(digit));
+        }
+    }
+
+    private int GetDigitFromButtonName(string buttonName)
+    {
+        if (!buttonName.StartsWith("Number"))
+        {
+            return -1;
         }
 
-        passwordLockUI.SetActive(true);
+        string digitText = buttonName.Substring("Number".Length);
+
+        if (int.TryParse(digitText, out int digit))
+        {
+            return digit;
+        }
+
+        return -1;
     }
 
     private void RegisterEscButton()
     {
-        var buttons = FindObjectsOfType<Button>(true);
-        foreach (var button in buttons)
-        {
-            if (button.gameObject.name != "Esc")
-                continue;
+        Button[] buttons = FindObjectsOfType<Button>(true);
 
-            button.onClick.AddListener(HidePasswordLock);
+        foreach (Button button in buttons)
+        {
+            if (button.gameObject.name == "Esc")
+            {
+                button.onClick.AddListener(HidePasswordLock);
+            }
         }
     }
 
-    private void HidePasswordLock()
+    public void Press1() => PressDigit(1);
+    public void Press2() => PressDigit(2);
+    public void Press3() => PressDigit(3);
+    public void Press4() => PressDigit(4);
+    public void Press5() => PressDigit(5);
+    public void Press6() => PressDigit(6);
+    public void Press7() => PressDigit(7);
+    public void Press8() => PressDigit(8);
+    public void Press9() => PressDigit(9);
+
+    public void PressDigit(int digit)
     {
-        if (isProcessing)
+        if (isProcessing || unlocked)
+        {
             return;
+        }
+
+        if (answerText == null)
+        {
+            answerText = FindAnswerText();
+        }
+
+        if (answerText == null)
+        {
+            Debug.LogWarning("[NumberPad] Answer Text is missing.");
+            return;
+        }
+
+        if (currentInput.Length >= correctPassword.Length)
+        {
+            return;
+        }
+
+        currentInput += digit.ToString();
+        RefreshAnswerText();
+
+        if (currentInput.Length >= correctPassword.Length)
+        {
+            CheckPassword();
+        }
+    }
+
+    private void RefreshAnswerText()
+    {
+        answerText.text = string.Join(" ", currentInput.ToCharArray());
+    }
+
+    private void CheckPassword()
+    {
+        if (currentInput == correctPassword)
+        {
+            StartCoroutine(Unlock());
+        }
+        else
+        {
+            StartCoroutine(WrongPasswordFeedback());
+        }
+    }
+
+    private IEnumerator Unlock()
+    {
+        isProcessing = true;
+        unlocked = true;
+        SetNumberButtonsInteractable(false);
+
+        if (objectToShowAfterUnlock != null)
+        {
+            objectToShowAfterUnlock.SetActive(true);
+        }
+
+        if (objectToHideAfterUnlock != null)
+        {
+            objectToHideAfterUnlock.SetActive(false);
+        }
+
+        onUnlocked?.Invoke();
 
         if (passwordLockUI != null)
+        {
             passwordLockUI.SetActive(false);
+        }
+
+        yield break;
+    }
+
+    private IEnumerator WrongPasswordFeedback()
+    {
+        isProcessing = true;
+        SetNumberButtonsInteractable(false);
+
+        Vector3 originalPosition = answerText.transform.localPosition;
+
+        answerText.color = Color.red;
+        answerText.transform.localPosition = originalPosition + new Vector3(-8f, 0f, 0f);
+        yield return new WaitForSeconds(flashInterval);
+
+        answerText.transform.localPosition = originalPosition + new Vector3(8f, 0f, 0f);
+        yield return new WaitForSeconds(flashInterval);
+
+        answerText.transform.localPosition = originalPosition;
+        yield return new WaitForSeconds(flashInterval);
+
+        currentInput = string.Empty;
+        answerText.text = string.Empty;
+        answerText.color = originalTextColor;
+        answerText.transform.localPosition = originalPosition;
+
+        isProcessing = false;
+        SetNumberButtonsInteractable(true);
+    }
+
+    private void SetNumberButtonsInteractable(bool interactable)
+    {
+        Button[] buttons = FindObjectsOfType<Button>(true);
+
+        foreach (Button button in buttons)
+        {
+            if (button.gameObject.name.StartsWith("Number"))
+            {
+                button.interactable = interactable;
+            }
+        }
+    }
+
+    public void ShowPasswordLock()
+    {
+        if (unlocked)
+        {
+            return;
+        }
 
         currentInput = string.Empty;
 
@@ -217,86 +249,31 @@ public class NumberPadController : MonoBehaviour
             answerText.text = string.Empty;
             answerText.color = originalTextColor;
         }
+
+        if (passwordLockUI != null)
+        {
+            passwordLockUI.SetActive(true);
+        }
     }
 
-    private void AppendDigitFromButton(Button button)
+    public void HidePasswordLock()
     {
-        if (isProcessing || answerText == null || currentInput.Length >= MaxLength)
-            return;
-
-        var tmpText = button.GetComponentInChildren<TMP_Text>();
-        if (tmpText != null && !string.IsNullOrEmpty(tmpText.text))
+        if (isProcessing)
         {
-            AppendDigit(tmpText.text);
             return;
         }
 
-        var legacyText = button.GetComponentInChildren<Text>();
-        if (legacyText != null && !string.IsNullOrEmpty(legacyText.text))
-            AppendDigit(legacyText.text);
-    }
-
-    private void AppendDigit(string digit)
-    {
-        currentInput += digit;
-        answerText.text = currentInput;
-
-        if (currentInput.Length >= MaxLength)
-            CheckPassword();
-    }
-
-    private void CheckPassword()
-    {
-        if (currentInput == correctPassword)
-            StartCoroutine(CorrectPasswordSequence());
-        else
-            StartCoroutine(WrongPasswordFeedback());
-    }
-
-    private IEnumerator CorrectPasswordSequence()
-    {
-        isProcessing = true;
-        SetButtonsInteractable(false);
-
-        if (uiRoot != null)
-            uiRoot.SetActive(false);
-
-        if (!string.IsNullOrEmpty(nextSceneName))
-            SceneManager.LoadScene(nextSceneName);
-
-        yield break;
-    }
-
-    private IEnumerator WrongPasswordFeedback()
-    {
-        isProcessing = true;
-        SetButtonsInteractable(false);
-
-        var redColor = Color.red;
-        answerText.color = redColor;
-        yield return new WaitForSeconds(flashInterval);
-
-        answerText.color = originalTextColor;
-        yield return new WaitForSeconds(flashInterval);
-
-        answerText.color = redColor;
-        yield return new WaitForSeconds(flashInterval);
-
         currentInput = string.Empty;
-        answerText.text = string.Empty;
-        answerText.color = originalTextColor;
 
-        isProcessing = false;
-        SetButtonsInteractable(true);
-    }
-
-    private void SetButtonsInteractable(bool interactable)
-    {
-        var buttons = FindObjectsOfType<Button>(true);
-        foreach (var button in buttons)
+        if (answerText != null)
         {
-            if (button.gameObject.name.StartsWith("Number"))
-                button.interactable = interactable;
+            answerText.text = string.Empty;
+            answerText.color = originalTextColor;
+        }
+
+        if (passwordLockUI != null)
+        {
+            passwordLockUI.SetActive(false);
         }
     }
 }

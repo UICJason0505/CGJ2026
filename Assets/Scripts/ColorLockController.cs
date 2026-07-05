@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class ColorLockController : MonoBehaviour
@@ -9,13 +9,15 @@ public class ColorLockController : MonoBehaviour
     [Header("Color Lock UI")]
     [SerializeField] private GameObject colorLockUI;
 
-    [Header("Color Sequence")]
-    [SerializeField] private string[] colorSequence = { "Blue", "Green", "Red", "White", "Orange" };
+    [Header("Password")]
+    [SerializeField] private string[] password = { "Blue", "Green", "Red", "White", "Orange" };
 
-    [Header("Scene Transition")]
-    [SerializeField] private string nextSceneName;
+    [Header("Unlock Result")]
+    [SerializeField] private GameObject objectToShowAfterUnlock;
+    [SerializeField] private GameObject objectToHideAfterUnlock;
+    [SerializeField] private UnityEvent onUnlocked;
 
-    [Header("Wrong Sequence Feedback")]
+    [Header("Wrong Password Feedback")]
     [SerializeField] private float flashInterval = 0.15f;
 
     private readonly Dictionary<string, Button> colorButtons = new Dictionary<string, Button>();
@@ -23,13 +25,15 @@ public class ColorLockController : MonoBehaviour
 
     private int progress;
     private bool isProcessing;
+    private bool unlocked;
 
     private void Awake()
     {
         if (colorLockUI == null)
-            colorLockUI = gameObject.name == "ColorLock" ? gameObject : GameObject.Find("ColorLock");
+        {
+            colorLockUI = gameObject;
+        }
 
-        HidePasswordLockIfPresent();
         CacheColorButtons();
     }
 
@@ -37,6 +41,7 @@ public class ColorLockController : MonoBehaviour
     {
         RegisterColorButtons();
         RegisterEscButton();
+        ResetLock();
     }
 
     private void CacheColorButtons()
@@ -45,27 +50,37 @@ public class ColorLockController : MonoBehaviour
         originalColors.Clear();
 
         if (colorLockUI == null)
-            return;
-
-        foreach (var button in colorLockUI.GetComponentsInChildren<Button>(true))
         {
-            if (!IsColorButtonName(button.gameObject.name))
+            return;
+        }
+
+        foreach (Button button in colorLockUI.GetComponentsInChildren<Button>(true))
+        {
+            string buttonName = button.gameObject.name;
+
+            if (!IsPasswordColor(buttonName))
+            {
                 continue;
+            }
 
-            colorButtons[button.gameObject.name] = button;
+            colorButtons[buttonName] = button;
 
-            var image = button.GetComponent<Image>();
+            Image image = button.GetComponent<Image>();
             if (image != null)
+            {
                 originalColors[button] = image.color;
+            }
         }
     }
 
-    private bool IsColorButtonName(string buttonName)
+    private bool IsPasswordColor(string colorName)
     {
-        foreach (var colorName in colorSequence)
+        for (int i = 0; i < password.Length; i++)
         {
-            if (buttonName == colorName)
+            if (password[i] == colorName)
+            {
                 return true;
+            }
         }
 
         return false;
@@ -73,72 +88,112 @@ public class ColorLockController : MonoBehaviour
 
     private void RegisterColorButtons()
     {
-        foreach (var pair in colorButtons)
+        foreach (KeyValuePair<string, Button> pair in colorButtons)
         {
-            var colorName = pair.Key;
-            pair.Value.onClick.AddListener(() => OnColorPressed(colorName));
+            string colorName = pair.Key;
+            pair.Value.onClick.AddListener(() => PressColor(colorName));
         }
     }
 
     private void RegisterEscButton()
     {
         if (colorLockUI == null)
-            return;
-
-        foreach (var button in colorLockUI.GetComponentsInChildren<Button>(true))
         {
-            if (button.gameObject.name != "Esc")
-                continue;
+            return;
+        }
 
-            button.onClick.AddListener(HideColorLock);
+        foreach (Button button in colorLockUI.GetComponentsInChildren<Button>(true))
+        {
+            if (button.gameObject.name == "Esc")
+            {
+                button.onClick.AddListener(HideColorLock);
+            }
         }
     }
 
-    private void OnColorPressed(string colorName)
+    public void PressBlue()
     {
-        if (isProcessing || progress >= colorSequence.Length)
-            return;
+        PressColor("Blue");
+    }
 
-        if (colorName != colorSequence[progress])
+    public void PressGreen()
+    {
+        PressColor("Green");
+    }
+
+    public void PressRed()
+    {
+        PressColor("Red");
+    }
+
+    public void PressWhite()
+    {
+        PressColor("White");
+    }
+
+    public void PressOrange()
+    {
+        PressColor("Orange");
+    }
+
+    public void PressColor(string colorName)
+    {
+        if (isProcessing || unlocked || progress >= password.Length)
         {
-            StartCoroutine(WrongSequenceFeedback());
+            return;
+        }
+
+        if (colorName != password[progress])
+        {
+            StartCoroutine(WrongPasswordFeedback());
             return;
         }
 
         progress++;
 
-        if (progress >= colorSequence.Length)
-            StartCoroutine(CorrectSequence());
+        if (progress >= password.Length)
+        {
+            StartCoroutine(Unlock());
+        }
     }
 
-    private IEnumerator CorrectSequence()
+    private IEnumerator Unlock()
     {
         isProcessing = true;
+        unlocked = true;
         SetColorButtonsInteractable(false);
 
-        if (colorLockUI != null)
-            colorLockUI.SetActive(false);
+        if (objectToShowAfterUnlock != null)
+        {
+            objectToShowAfterUnlock.SetActive(true);
+        }
 
-        if (!string.IsNullOrEmpty(nextSceneName))
-            SceneManager.LoadScene(nextSceneName);
+        if (objectToHideAfterUnlock != null)
+        {
+            objectToHideAfterUnlock.SetActive(false);
+        }
+
+        onUnlocked?.Invoke();
+
+        if (colorLockUI != null)
+        {
+            colorLockUI.SetActive(false);
+        }
 
         yield break;
     }
 
-    private IEnumerator WrongSequenceFeedback()
+    private IEnumerator WrongPasswordFeedback()
     {
         isProcessing = true;
         SetColorButtonsInteractable(false);
 
         SetAllColorButtonsColor(Color.red);
         yield return new WaitForSeconds(flashInterval);
-
         RestoreColorButtonColors();
         yield return new WaitForSeconds(flashInterval);
-
         SetAllColorButtonsColor(Color.red);
         yield return new WaitForSeconds(flashInterval);
-
         RestoreColorButtonColors();
 
         progress = 0;
@@ -148,54 +203,71 @@ public class ColorLockController : MonoBehaviour
 
     private void SetAllColorButtonsColor(Color color)
     {
-        foreach (var button in colorButtons.Values)
+        foreach (Button button in colorButtons.Values)
         {
-            var image = button.GetComponent<Image>();
+            Image image = button.GetComponent<Image>();
             if (image != null)
+            {
                 image.color = color;
+            }
         }
     }
 
     private void RestoreColorButtonColors()
     {
-        foreach (var pair in originalColors)
+        foreach (KeyValuePair<Button, Color> pair in originalColors)
         {
-            var image = pair.Key.GetComponent<Image>();
+            Image image = pair.Key.GetComponent<Image>();
             if (image != null)
+            {
                 image.color = pair.Value;
+            }
         }
     }
 
     private void SetColorButtonsInteractable(bool interactable)
     {
-        foreach (var button in colorButtons.Values)
+        foreach (Button button in colorButtons.Values)
+        {
             button.interactable = interactable;
+        }
     }
 
     public void ShowColorLock()
     {
-        progress = 0;
-        HidePasswordLockIfPresent();
+        if (unlocked)
+        {
+            return;
+        }
+
+        ResetLock();
 
         if (colorLockUI != null)
+        {
             colorLockUI.SetActive(true);
+        }
     }
 
-    private static void HidePasswordLockIfPresent()
-    {
-        var passwordLock = GameObject.Find("PasswordLock");
-        if (passwordLock != null)
-            passwordLock.SetActive(false);
-    }
-
-    private void HideColorLock()
+    public void HideColorLock()
     {
         if (isProcessing)
+        {
             return;
+        }
 
-        progress = 0;
+        ResetLock();
 
         if (colorLockUI != null)
+        {
             colorLockUI.SetActive(false);
+        }
+    }
+
+    public void ResetLock()
+    {
+        progress = 0;
+        isProcessing = false;
+        RestoreColorButtonColors();
+        SetColorButtonsInteractable(true);
     }
 }
