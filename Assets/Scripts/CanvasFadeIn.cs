@@ -8,6 +8,15 @@ public class CanvasFadeIn : MonoBehaviour
     [SerializeField] private float fadeDuration = 0.5f;
     [SerializeField] private AnimationCurve fadeCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
+    private void Awake()
+    {
+        foreach (var btn in buttons)
+        {
+            if (btn == null) continue;
+            btn.gameObject.SetActive(false);
+        }
+    }
+
     public void Show(int index)
     {
         if (index < 0 || index >= buttons.Length) return;

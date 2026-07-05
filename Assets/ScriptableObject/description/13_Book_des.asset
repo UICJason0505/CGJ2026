@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f42ea7f20a349574d9bbd674990e8af1, type: 3}
   m_Name: 13_Book_des
   m_EditorClassIdentifier: 
-  outcomeType: 0
+  outcomeType: 1
   description: 
   dialogueType: 0
   dialogueNodes: []
-  popupSprite: {fileID: 0}
-  popupDescription: 
+  popupSprite: {fileID: 21300000, guid: 0343369f5138de7498862551a84145aa, type: 3}
+  popupDescription: "\u4E00\u672C\u8001\u65E7\u7684\u7B14\u8BB0\u672C\uFF0C\u597D\u50CF\u5BF9\u4F60\u5F88\u91CD\u8981"
   animationTriggerName: 

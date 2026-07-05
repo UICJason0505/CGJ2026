@@ -16,6 +16,7 @@ public class MaskCameraController : MonoBehaviour
     public Vector2 yLimit = new Vector2(-450f, 450f);
 
     private Camera uiCamera;
+    private bool _locked;
 
     void Start()
     {
@@ -45,7 +46,12 @@ public class MaskCameraController : MonoBehaviour
             ToggleMask();
         }
 
-        if (maskObject != null && maskObject.activeSelf)
+        if (Input.GetMouseButtonDown(1))
+        {
+            _locked = true;
+        }
+
+        if (maskObject != null && maskObject.activeSelf && !_locked)
         {
             FollowMouse();
         }
@@ -70,6 +76,7 @@ public class MaskCameraController : MonoBehaviour
 
         if (maskObject.activeSelf)
         {
+            _locked = false;
             InitHiddenImage();
             MatchHiddenImageToBackground();
         }

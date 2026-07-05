@@ -18,6 +18,10 @@ public class NumberPadController : MonoBehaviour
     [SerializeField] private GameObject objectToHideAfterUnlock;
     [SerializeField] private UnityEvent onUnlocked;
 
+    [Header("Storyline")]
+    [SerializeField] private StorylineController storylineController;
+    [SerializeField] private int targetSequence = 30;
+
     [Header("Wrong Password Feedback")]
     [SerializeField] private float flashInterval = 0.15f;
 
@@ -254,6 +258,12 @@ public class NumberPadController : MonoBehaviour
         {
             passwordLockUI.SetActive(true);
         }
+    }
+
+    public void AdvanceStoryline()
+    {
+        if (storylineController != null)
+            storylineController.GoToSequence(targetSequence);
     }
 
     public void HidePasswordLock()

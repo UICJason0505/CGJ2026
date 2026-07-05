@@ -14,8 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outcomeType: 0
   description: 
-  dialogueType: 0
-  dialogueNodes: []
+  dialogueType: 1
+  dialogueNodes:
+  - nodeId: 0
+    text: "\u6211\u5E94\u8BE5\u6253\u5F00\u770B\u770B"
+    speakerName: 
+    choices: []
+    nextNodeId: -1
   popupSprite: {fileID: 0}
   popupDescription: 
   animationTriggerName: 
