@@ -2011,7 +2011,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &314818581
@@ -6727,7 +6727,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!224 &1400608552
@@ -7796,6 +7796,13 @@ MonoBehaviour:
       repeatable: 0
       endOfPhase: 1
       skipInTest: 0
+    - storyEvent: {fileID: 11400000, guid: 1e93e0c28df072d42831118b9af16b3f, type: 2}
+      sequenceIndex: 1
+      triggerMode: 1
+      followAfterSequence: -1
+      repeatable: 0
+      endOfPhase: 0
+      skipInTest: 0
   - phaseId: 2
     phaseName: ArtGallery
     canvas: {fileID: 1487588800}
@@ -7883,6 +7890,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bbd9c7fa1fbd9f641aca64b4d4e02938, type: 2}
   - {fileID: 11400000, guid: aff577890c8a8d344871eddad4d03c0b, type: 2}
   - {fileID: 11400000, guid: 99cb6498322af4d469a826ee752fd558, type: 2}
+  - {fileID: 11400000, guid: 1e93e0c28df072d42831118b9af16b3f, type: 2}
   dialogueManager: {fileID: 1768223079}
   storylineController: {fileID: 1768223076}
   descriptionCanvas: {fileID: 1704312629}
@@ -8490,7 +8498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c72c9f571c4fc44ba79cbea725b08eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storyEvent: {fileID: 11400000, guid: 8f2fb510990bd2f46bf7148ce3ab173f, type: 2}
+  storyEvent: {fileID: 11400000, guid: 1e93e0c28df072d42831118b9af16b3f, type: 2}
   storyEvents: []
   delayBetweenEvents: 0.1
 --- !u!114 &1951687220
