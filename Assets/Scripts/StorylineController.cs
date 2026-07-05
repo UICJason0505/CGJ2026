@@ -321,6 +321,13 @@ public class StorylineController : MonoBehaviour
         AdvanceSequence();
     }
 
+    /// <summary>跳转到指定序号</summary>
+    public void GoToSequence(int target)
+    {
+        while (_currentSequence < target)
+            AdvanceSequence();
+    }
+
     private void AdvanceSequence()
     {
         var completedSequence = _currentSequence;

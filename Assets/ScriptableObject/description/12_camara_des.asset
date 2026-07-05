@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f42ea7f20a349574d9bbd674990e8af1, type: 3}
+  m_Name: 12_camara_des
+  m_EditorClassIdentifier: 
+  outcomeType: 1
+  description: 
+  dialogueType: 0
+  dialogueNodes: []
+  popupSprite: {fileID: 21300000, guid: 9495958f2e274c642b8feec848633263, type: 3}
+  popupDescription: "\u4F60\u5DF2\u89E3\u9501\u5173\u952E\u9053\u5177\u2014\u2014\u8BB0\u5FC6\u4E4B\u951A\uFF1A\u6309\u4E0B\u5FEB\u95E8\u952E\uFF0C\u5B83\u53EF\u4EE5\u951A\u5B9A\u7279\u6B8A\u7684\u5730\u70B9\uFF0C\u5E26\u4F60\u51B2\u7834\u65F6\u95F4\u7684\u67B7\u9501\uFF0C\u770B\u5230\u8BE5\u5730\u70B9\u8FC7\u53BB\u53D1\u751F\u7684\u4E8B\u60C5\u3002\u6CE8\u610F\uFF1A\u8BB0\u5FC6\u4E4B\u951A\u4E2D\u7684\u90E8\u5206\u7269\u54C1\u53EF\u4EE5\u6536\u96C6\uFF0C\u8FD9\u53EF\u80FD\u662F\u4F60\u8FFD\u56DE\u8BB0\u5FC6\u7684\u5173\u952E"
+  animationTriggerName: 
